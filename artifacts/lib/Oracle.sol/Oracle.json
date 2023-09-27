@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Oracle",
+  "sourceName": "lib/Oracle.sol",
+  "abi": [],
+  "bytecode": "0x60808060405234601757603a9081601d823930815050f35b600080fdfe600080fdfea264697066735822122022366fdd8a7993f3f9d90390f0c76e6f0cdc9777c626fead3544f9c83353fe1664736f6c63430008130033",
+  "deployedBytecode": "0x600080fdfea264697066735822122022366fdd8a7993f3f9d90390f0c76e6f0cdc9777c626fead3544f9c83353fe1664736f6c63430008130033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

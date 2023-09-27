@@ -43,8 +43,8 @@
       ]
     },
     "D:\\IT projects\\Solidity\\New folder\\Uniswap\\contracts\\UniswapV3PoolClone.sol": {
-      "lastModificationDate": 1695787395775,
-      "contentHash": "cbb74153be63a61a83a25b434df97229",
+      "lastModificationDate": 1695800059598,
+      "contentHash": "eb0f91b2a343d021c763d50c20bed5ec",
       "sourceName": "contracts/UniswapV3PoolClone.sol",
       "solcConfig": {
         "version": "0.8.19",
@@ -84,6 +84,7 @@
         "./interfaces/IUniswapV3FlashCallback.sol",
         "./interfaces/IUniswapV3PoolDeployer.sol",
         "../lib/TickBitmap.sol",
+        "../lib/Oracle.sol",
         "../lib/Math.sol",
         "../lib/TickMath.sol",
         "../lib/SwapMath.sol",
@@ -139,8 +140,8 @@
       ]
     },
     "D:\\IT projects\\Solidity\\New folder\\Uniswap\\contracts\\interfaces\\IUniswapV3FlashCallback.sol": {
-      "lastModificationDate": 1695271262490,
-      "contentHash": "f27324f2027eab16fb337c3e0712bddf",
+      "lastModificationDate": 1695795541069,
+      "contentHash": "a6aa78b299955ba4a45f452e8cb3a787",
       "sourceName": "contracts/interfaces/IUniswapV3FlashCallback.sol",
       "solcConfig": {
         "version": "0.8.19",
@@ -1291,6 +1292,47 @@
       ],
       "artifacts": [
         "FixedPoint128"
+      ]
+    },
+    "D:\\IT projects\\Solidity\\New folder\\Uniswap\\lib\\Oracle.sol": {
+      "lastModificationDate": 1695800398698,
+      "contentHash": "aca50b905589ac3228533435631cced4",
+      "sourceName": "lib/Oracle.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "viaIR": true,
+          "optimizer": {
+            "enabled": true,
+            "runs": 100,
+            "details": {
+              "constantOptimizer": false,
+              "deduplicate": true,
+              "yul": true
+            }
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.8.19"
+      ],
+      "artifacts": [
+        "Oracle"
       ]
     }
   }

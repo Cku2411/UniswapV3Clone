@@ -9,6 +9,7 @@ import "./interfaces/IUniswapV3SwapCallback.sol";
 import "./interfaces/IUniswapV3FlashCallback.sol";
 import "./interfaces/IUniswapV3PoolDeployer.sol";
 import "../lib/TickBitmap.sol";
+import "../lib/Oracle.sol";
 import "../lib/Math.sol";
 import "../lib/TickMath.sol";
 import "../lib/SwapMath.sol";
@@ -21,6 +22,7 @@ error InsufficientInputAmount();
 error NotEnoughLiquidity();
 error InvalidPriceLimit();
 error AlreadyInitialized();
+error FlashLoanNotPaid();
 
 contract UniswapV3Pool {
     // Using library
@@ -28,6 +30,7 @@ contract UniswapV3Pool {
     using Position for mapping(bytes32 => Position.Info); //Using library for type mapping
     using Position for Position.Info; // Using library for type struc
     using TickBitmap for mapping(int16 => uint256);
+    using Oracle for Oracle.Observation[65535];
 
     // Pool tokens
     address public immutable token0;
@@ -40,6 +43,9 @@ contract UniswapV3Pool {
         // Current Price
         uint160 sqrtPriceX96;
         int24 tick;
+        uint16 observationIndex;
+        uint16 observationCardinality; // Maximum number of observations
+        uint16 observationCardinalityNext; // Next Maximum number of Observations
     }
 
     struct CallbackData {
@@ -75,6 +81,7 @@ contract UniswapV3Pool {
     }
 
     Slot0 public slot0;
+    Oracle.Observation[65535] public observations;
 
     // liquidity & Fee
     uint128 public liquidity;
@@ -128,6 +135,11 @@ contract UniswapV3Pool {
         uint256 amount1
     );
 
+    event IncreaseObservationCardinalityNext(
+        uint16 observationCardinalityNextOld,
+        uint16 observationCardinalityNextNew
+    );
+
     /**-----Contructor ---- */
     constructor() {
         (factory, token0, token1, tickSpacing, fee) = IUniswapV3PoolDeployer(
@@ -139,9 +151,19 @@ contract UniswapV3Pool {
     //  set Current Price and tick for POOL
     function initialize(uint160 sqrtPriceX96) public {
         if (slot0.sqrtPriceX96 != 0) revert AlreadyInitialized();
+        //  set ObserVationCardinality
+        (uint16 cardinality, uint16 cardinalityNext) = observations.initialize(
+            _blockTimeStamp()
+        );
         // set Tick
         int24 tick = TickMath.getTickAtSqrtRatio(sqrtPriceX96);
-        slot0 = Slot0({sqrtPriceX96: sqrtPriceX96, tick: tick});
+        slot0 = Slot0({
+            sqrtPriceX96: sqrtPriceX96,
+            tick: tick,
+            observationIndex: 0,
+            observationCardinality: cardinality,
+            observationCardinalityNext: cardinalityNext
+        });
     }
 
     function _modifiyPosition(
@@ -480,8 +502,30 @@ contract UniswapV3Pool {
         console.log(" Done Loop...");
 
         // Update contract's State
+        // Uniswap track price beofre th first trade in block and last trade in previous block
         if (state.tick != _slot0.tick) {
-            (slot0.sqrtPriceX96, slot0.tick) = (state.sqrtPriceX96, state.tick);
+            (
+                uint16 observationIndex,
+                uint16 observationCardinality
+            ) = observations.write(
+                    _slot0.observationIndex,
+                    _blockTimeStamp(),
+                    _slot0.tick,
+                    _slot0.observationCardinality,
+                    _slot0.observationCardinalityNext
+                );
+
+            (
+                slot0.sqrtPriceX96,
+                slot0.tick,
+                slot0.observationIndex,
+                slot0.observationCardinality
+            ) = (
+                state.sqrtPriceX96,
+                state.tick,
+                observationIndex,
+                observationCardinality
+            );
         }
 
         console.log(" Update StatePrice %s...", state.sqrtPriceX96);
@@ -611,7 +655,6 @@ contract UniswapV3Pool {
         uint256 fee0 = FullMath.mulDivRoundingUp(amount0, fee, 1e6);
         uint256 fee1 = FullMath.mulDivRoundingUp(amount1, fee, 1e6);
 
-        
         // take Balance token0, token1 of this contract
         uint256 balance0Before = IERC20(token0).balanceOf(address(this));
         uint256 balance1Before = IERC20(token1).balanceOf(address(this));
@@ -621,13 +664,43 @@ contract UniswapV3Pool {
         }
         if (amount1 > 0) IERC20(token1).transfer(msg.sender, amount1);
         // implemented flashLoan
-        IUniswapV3FlashCallback(msg.sender).uniswapV3FlashCallback(data);
+        IUniswapV3FlashCallback(msg.sender).uniswapV3FlashCallback(
+            fee0,
+            fee1,
+            data
+        );
 
         // Check Balance token0, token1 of this contract
-        require(IERC20(token0).balanceOf(address(this)) >= balance0Before);
-        require(IERC20(token1).balanceOf(address(this)) >= balance1Before);
+
+        if (IERC20(token0).balanceOf(address(this)) < balance0Before + fee0) {
+            revert FlashLoanNotPaid();
+        }
+        if (IERC20(token1).balanceOf(address(this)) < balance1Before + fee1) {
+            revert FlashLoanNotPaid();
+        }
 
         emit Flash(msg.sender, amount0, amount1);
+    }
+
+    // Increasee Cardinality
+    function increaseObservationCardinalityNext(
+        uint16 observationCardinalityNext
+    ) public {
+        uint16 observationCardinalityNextOld = slot0.observationCardinalityNext;
+        uint16 observationCardinalityNextNew = observations.grow(
+            observationCardinalityNextOld,
+            observationCardinalityNext
+        );
+
+        if (observationCardinalityNextNew != observationCardinalityNextOld) {
+            // uodate slot0
+            slot0.observationCardinalityNext = observationCardinalityNextNew;
+            // fire event
+            emit IncreaseObservationCardinalityNext(
+                observationCardinalityNextOld,
+                observationCardinalityNextNew
+            );
+        }
     }
 
     // Helper function
@@ -638,6 +711,10 @@ contract UniswapV3Pool {
 
     function _balance1() internal view returns (uint256 balance) {
         return balance = IERC20(token1).balanceOf(address(this));
+    }
+
+    function _blockTimeStamp() internal view returns (uint32 timestamp) {
+        timestamp = uint32(block.timestamp);
     }
 }
 
