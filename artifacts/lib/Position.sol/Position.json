@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Position",
+  "sourceName": "lib/Position.sol",
+  "abi": [],
+  "bytecode": "0x60808060405234601757603a9081601d823930815050f35b600080fdfe600080fdfea26469706673582212201ea33d25ad8535af1cca7d54178d9a4a97be8cfb156168d4cd7bfb9455767cbb64736f6c63430008130033",
+  "deployedBytecode": "0x600080fdfea26469706673582212201ea33d25ad8535af1cca7d54178d9a4a97be8cfb156168d4cd7bfb9455767cbb64736f6c63430008130033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
