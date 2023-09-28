@@ -7,10 +7,10 @@ module.exports = {
     hardhat: {
       allowUnlimitedContractSize: true,
     },
-    sepolia: {
-      url: process.env.SEPOLIA_PROVIDER,
-      accounts: [process.env.PRIVATE_KEY],
-    },
+    // sepolia: {
+    //   url: process.env.SEPOLIA_PROVIDER,
+    //   accounts: [process.env.PRIVATE_KEY],
+    // },
   },
 
   solidity: {
