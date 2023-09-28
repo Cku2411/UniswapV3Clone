@@ -70,7 +70,7 @@ contract UniswapV3Manager {
         IUniswapV3Pool pool = IUniswapV3Pool(poolAddress);
 
         // Get the current Price
-        (uint160 sqrtPriceX96, ) = pool.slot0();
+        (uint160 sqrtPriceX96, , , , ) = pool.slot0();
         // Get Price Range
         uint160 sqrtPriceLowerX96 = TickMath.getSqrtRatioAtTick(
             params.lowerTick
@@ -227,7 +227,7 @@ contract UniswapV3Manager {
 
         IUniswapV3Pool pool = IUniswapV3Pool(poolAddress);
 
-        (uint160 sqrtPriceX96, int24 tick) = pool.slot0();
+        (uint160 sqrtPriceX96, int24 tick, , , ) = pool.slot0();
 
         uint160 sqrtPriceLowerX96 = TickMath.getSqrtRatioAtTick(
             params.lowerTick

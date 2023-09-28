@@ -776,8 +776,8 @@
       ]
     },
     "D:\\IT projects\\Solidity\\New folder\\Uniswap\\contracts\\UniswapV3Quoter.sol": {
-      "lastModificationDate": 1695629137280,
-      "contentHash": "5861b1dda32d0538b104e25398fd88ee",
+      "lastModificationDate": 1695882769725,
+      "contentHash": "d1c0ef56b6965193cdd65a7c09f4f5b2",
       "sourceName": "contracts/UniswapV3Quoter.sol",
       "solcConfig": {
         "version": "0.8.19",
@@ -823,8 +823,8 @@
       ]
     },
     "D:\\IT projects\\Solidity\\New folder\\Uniswap\\contracts\\interfaces\\IUniswapV3Pool.sol": {
-      "lastModificationDate": 1695304578540,
-      "contentHash": "c64825ab736cd0bb631bb682a1ea9973",
+      "lastModificationDate": 1695882417947,
+      "contentHash": "1f1d9359ec183d1ae27ff708338f2bb6",
       "sourceName": "contracts/interfaces/IUniswapV3Pool.sol",
       "solcConfig": {
         "version": "0.8.19",
@@ -948,8 +948,8 @@
       ]
     },
     "D:\\IT projects\\Solidity\\New folder\\Uniswap\\contracts\\UniswapV3Manager.sol": {
-      "lastModificationDate": 1695801286270,
-      "contentHash": "251b8db534f0f0ac6dbe642bba0a254b",
+      "lastModificationDate": 1695882784206,
+      "contentHash": "96a78ec7f7fe334d08110b01e9d2dba5",
       "sourceName": "contracts/UniswapV3Manager.sol",
       "solcConfig": {
         "version": "0.8.19",
@@ -1333,6 +1333,95 @@
       ],
       "artifacts": [
         "Oracle"
+      ]
+    },
+    "D:\\IT projects\\Solidity\\New folder\\Uniswap\\contracts\\UniswapV3NFTManager.sol": {
+      "lastModificationDate": 1695886961072,
+      "contentHash": "4899ff6fd956e6d1869a462129066f41",
+      "sourceName": "contracts/UniswapV3NFTManager.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "viaIR": true,
+          "optimizer": {
+            "enabled": true,
+            "runs": 100,
+            "details": {
+              "constantOptimizer": false,
+              "deduplicate": true,
+              "yul": true
+            }
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "solmate/src/tokens/ERC721.sol",
+        "./interfaces/IUniswapV3Pool.sol",
+        "../lib/PoolAddress.sol",
+        "../lib/LiquidityMath.sol",
+        "../lib/TickMath.sol"
+      ],
+      "versionPragmas": [
+        "0.8.19"
+      ],
+      "artifacts": [
+        "UniswapV3NFTManager"
+      ]
+    },
+    "D:\\IT projects\\Solidity\\New folder\\Uniswap\\node_modules\\solmate\\src\\tokens\\ERC721.sol": {
+      "lastModificationDate": 1695881807430,
+      "contentHash": "ecc06cefc5404b9e1adbc2e459d5757e",
+      "sourceName": "solmate/src/tokens/ERC721.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "viaIR": true,
+          "optimizer": {
+            "enabled": true,
+            "runs": 100,
+            "details": {
+              "constantOptimizer": false,
+              "deduplicate": true,
+              "yul": true
+            }
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.8.0"
+      ],
+      "artifacts": [
+        "ERC721",
+        "ERC721TokenReceiver"
       ]
     }
   }
