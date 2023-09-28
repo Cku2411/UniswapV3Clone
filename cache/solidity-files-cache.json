@@ -948,7 +948,7 @@
       ]
     },
     "D:\\IT projects\\Solidity\\New folder\\Uniswap\\contracts\\UniswapV3Manager.sol": {
-      "lastModificationDate": 1695711618529,
+      "lastModificationDate": 1695801286270,
       "contentHash": "251b8db534f0f0ac6dbe642bba0a254b",
       "sourceName": "contracts/UniswapV3Manager.sol",
       "solcConfig": {
@@ -1295,8 +1295,8 @@
       ]
     },
     "D:\\IT projects\\Solidity\\New folder\\Uniswap\\lib\\Oracle.sol": {
-      "lastModificationDate": 1695800398698,
-      "contentHash": "aca50b905589ac3228533435631cced4",
+      "lastModificationDate": 1695869681721,
+      "contentHash": "c1731f3862f864383d50375da661a1b3",
       "sourceName": "lib/Oracle.sol",
       "solcConfig": {
         "version": "0.8.19",
@@ -1329,7 +1329,7 @@
       },
       "imports": [],
       "versionPragmas": [
-        "0.8.19"
+        "^0.8.19"
       ],
       "artifacts": [
         "Oracle"
