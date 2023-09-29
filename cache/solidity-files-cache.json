@@ -823,8 +823,8 @@
       ]
     },
     "D:\\IT projects\\Solidity\\New folder\\Uniswap\\contracts\\interfaces\\IUniswapV3Pool.sol": {
-      "lastModificationDate": 1695882417947,
-      "contentHash": "1f1d9359ec183d1ae27ff708338f2bb6",
+      "lastModificationDate": 1695956795788,
+      "contentHash": "6a04492577ef5e1e9cc68557dd5dbfbe",
       "sourceName": "contracts/interfaces/IUniswapV3Pool.sol",
       "solcConfig": {
         "version": "0.8.19",
@@ -1336,8 +1336,8 @@
       ]
     },
     "D:\\IT projects\\Solidity\\New folder\\Uniswap\\contracts\\UniswapV3NFTManager.sol": {
-      "lastModificationDate": 1695886961072,
-      "contentHash": "4899ff6fd956e6d1869a462129066f41",
+      "lastModificationDate": 1695957089126,
+      "contentHash": "9b6e13d3fd56ef89a1863d8552a712a6",
       "sourceName": "contracts/UniswapV3NFTManager.sol",
       "solcConfig": {
         "version": "0.8.19",

@@ -9,6 +9,7 @@ import "../lib/TickMath.sol";
 
 error SlippageCheckFailed(uint256 amount0, uint256 amount1);
 error WrongToken();
+error PositionNotCleared();
 
 contract UniswapV3NFTManager is ERC721 {
     address public immutable factory;
@@ -58,6 +59,12 @@ contract UniswapV3NFTManager is ERC721 {
         uint128 liquidity;
     }
 
+    struct CollectParams {
+        uint256 tokenId;
+        uint128 amount0;
+        uint128 amount1;
+    }
+
     // Mapping tokenId to TokenPosition
     mapping(uint256 => TokenPosition) public positions;
 
@@ -67,6 +74,13 @@ contract UniswapV3NFTManager is ERC721 {
         uint160 liquidity,
         uint256 amount0,
         uint256 amoun1
+    );
+
+    event RemoveLiquidity(
+        uint256 indexed tokenId,
+        uint128 liquidity,
+        uint256 amount0,
+        uint256 amount1
     );
 
     // Constructor
@@ -131,19 +145,68 @@ contract UniswapV3NFTManager is ERC721 {
         emit Addliquidity(params.tokenId, liquidity, amount0, amount1);
     }
 
-    // function removeLiquidity(
-    //     RemoveLiquidityParams calldata params
-    // ) public returns (uint256 amount0, uint256 amount1) {
-    //     // Get the ToeknPosition
-    //     TokenPosition memory tokenPosition = positions[params.tokenId];
-    //     if (tokenPosition.pool == address(0x0)) revert WrongToken();
+    function removeLiquidity(
+        RemoveLiquidityParams calldata params
+    ) public returns (uint256 amount0, uint256 amount1) {
+        // Get the ToeknPosition
+        TokenPosition memory tokenPosition = positions[params.tokenId];
+        if (tokenPosition.pool == address(0x0)) revert WrongToken();
 
-    //     IUniswapV3Pool pool = IUniswapV3Pool(tokenPosition.pool);
+        IUniswapV3Pool pool = IUniswapV3Pool(tokenPosition.pool);
 
-    //     (uint128 availableLiquidity, ) = pool.positions(
-    //         Pool
-    //     )
-    // }
+        (uint128 availableLiquidity, , , , ) = pool.positions(
+            poolPositionKey(tokenPosition)
+        );
+
+        if (params.liquidity > availableLiquidity) revert NotEnoughLiquidity();
+
+        (amount0, amount1) = pool.burn(
+            tokenPosition.lowerTick,
+            tokenPosition.upperTick,
+            params.liquidity
+        );
+
+        emit RemoveLiquidity(
+            params.tokenId,
+            params.liquidity,
+            amount0,
+            amount1
+        );
+    }
+
+    function collect(
+        CollectParams memory params
+    ) public returns (uint128 amount0, uint128 amount1) {
+        TokenPosition memory tokenPosition = positions[params.tokenId];
+
+        if (tokenPosition.pool == address(0x0)) revert WrongToken();
+
+        IUniswapV3Pool pool = IUniswapV3Pool(tokenPosition.pool);
+
+        (amount0, amount1) = pool.collect(
+            msg.sender,
+            tokenPosition.lowerTick,
+            tokenPosition.upperTick,
+            params.amount0,
+            params.amount1
+        );
+    }
+
+    function burn(uint256 tokenId) public {
+        TokenPosition memory tokenPosition = positions[tokenId];
+
+        if (tokenPosition.pool == address(0x0)) revert WrongToken();
+        IUniswapV3Pool pool = IUniswapV3Pool(tokenPosition.pool);
+        (uint128 liquidity, , , uint128 tokensOwed0, uint128 tokensOwed1) = pool
+            .positions(poolPositionKey(tokenPosition));
+
+        if (liquidity > 0 || tokensOwed0 > 0 || tokensOwed1 > 0)
+            revert PositionNotCleared();
+
+        delete positions[tokenId];
+        _burn(tokenId);
+        totalSupply--;
+    }
 
     // Helper Function
     function tokenURI(
@@ -198,6 +261,33 @@ contract UniswapV3NFTManager is ERC721 {
 
         pool = IUniswapV3Pool(
             PoolAddress.computeAddress(factory, token0, token1, fee)
+        );
+    }
+
+    // Return the position within the pool
+    function poolPositionKey(
+        TokenPosition memory position
+    ) internal view returns (bytes32 key) {
+        key = keccak256(
+            abi.encodePacked(
+                address(this),
+                position.lowerTick,
+                position.upperTick
+            )
+        );
+    }
+
+    // Return the position within the NFT manager
+    function positionKey(
+        TokenPosition memory position
+    ) internal pure returns (bytes32 key) {
+        // return the position key for mapping
+        key = keccak256(
+            abi.encodePacked(
+                address(position.pool),
+                position.lowerTick,
+                position.upperTick
+            )
         );
     }
 }
